@@ -55,6 +55,7 @@
 
         methods : {
             ...mapActions('page', ['setAllVisible']),
+            ...mapActions('user', ['setToken']),
 
             async login() {
                 /**
@@ -63,6 +64,14 @@
                  * 로그인 한 후 발급된 토큰을 vuex에 저장
                  * 로그인 성공 후 location.href='/'
                  */
+                const response=await this.$api('auth/user', 'POST', { id : this.id, pwd : this.password});
+                if(response.status==this.HTTP_OK){
+                    this.setToken(response.data.token);
+                    location.href='/';
+                } else {
+                    console.log(error);
+                }
+                
             }
         },
 

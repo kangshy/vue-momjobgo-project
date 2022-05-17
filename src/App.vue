@@ -37,7 +37,8 @@ export default {
     },
 
     methods : {
-        
+        ...mapActions('user', ['setName', 'setId']),
+
         checkToken(){
             const nowPath = window.location.pathname;
             // 현재 토큰이 있는지 확인 .
@@ -56,6 +57,11 @@ export default {
              * 
              * vuex 유저정보 갱신
              */
+            if(this.hasToken) {
+                const response=this.$api('api-auth-controller', 'GET');
+                this.setName(response.data.name);
+                this.setId(response.data.id);
+            }
         }
     },
 
@@ -69,6 +75,5 @@ export default {
             this.checkToken();
         }
     }
-
 };
 </script>
