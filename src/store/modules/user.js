@@ -15,7 +15,9 @@ export default {
     },
 
     getters : {
+        hasToken() {
 
+        }
     },
 
     mutations : {

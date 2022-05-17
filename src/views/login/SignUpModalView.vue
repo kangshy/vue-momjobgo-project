@@ -35,6 +35,7 @@
 </template>
 
 <script>
+    import axios from '@/plugins/axios'
     export default {
         props : {
             btnColor : {
@@ -61,6 +62,45 @@
                  * 
                  * 비밀번호와 비밀번호 확인이 서로 일치해야 함.
                  */
+                /* 아이디 입력 확인 */
+               if(this.user.id.trim().length===0){
+                   alert("아이디를 입력하세요");
+                   // 아이디 창에 focus
+                   return;
+               } else if(this.user.pwd.length===0) {
+                   alert("비밀번호를 입력하세요");
+                   // 비밀번호 창에 focus
+                   return;
+               } else if(this.user.checkPwd.length ===0) {
+                   alert("비밀번호 확인을 위해 다시 비밀번호를 입력해주세요");
+                   // 비밀번호 확인 창에 focus
+                   return;
+               } else if(this.user.pwd.trim().localeCompare(this.user.checkPwd.trim())!==0) {
+                   console.log("[PWD} "+this.user.pwd.trim()+ ", [ChkPWD] "+this.user.checkPwd.trim());
+                   alert("입력한 비밀번호가 다릅니다. 확인해 주세요");
+                   // 비밀번호 확인 창에 focus
+                   return;
+               } else if(this.user.name.trim().length===0) {
+                   alert("이름을 입력하세요");
+                   // 이름 창에 focus
+                   return;
+               } else {
+                    this.user.id = this.user.id.trim();
+                    this.user.name = this.user.name.trim();
+                    axios.post('/auth/user/new', {
+                        id : this.user.id,
+                        name : this.user.name,
+                        pwd : this.user.pwd
+                    }).then(response=>{
+                        console.log(response);
+                        if(response.status==201) {
+                            alert(`${this.user.name}님의 가입을 환영합니다.`);
+                        }
+                        this.dialog = false;
+                    }).catch(error=>{
+                        console.log(error);
+                    });
+               }
             }
         },
 
