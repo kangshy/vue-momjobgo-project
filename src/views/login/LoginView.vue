@@ -69,7 +69,7 @@
                     this.setToken(response.data.token);
                     location.href='/';
                 } else {
-                    console.log(error);
+                    console.log(response.data.error);
                 }
                 
             }

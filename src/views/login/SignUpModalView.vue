@@ -35,7 +35,6 @@
 </template>
 
 <script>
-    import axios from '@/plugins/axios'
     export default {
         props : {
             btnColor : {
@@ -87,20 +86,20 @@
                } else {
                     this.user.id = this.user.id.trim();
                     this.user.name = this.user.name.trim();
-                    axios.post('/auth/user/new', {
+
+                    const response = await this.$api('auth/user/new', 'POST', {
                         id : this.user.id,
                         name : this.user.name,
                         pwd : this.user.pwd
-                    }).then(response=>{
-                        console.log(response);
-                        if(response.status==201) {
-                            alert(`${this.user.name}님의 가입을 환영합니다.`);
-                        }
-                        this.dialog = false;
-                    }).catch(error=>{
-                        console.log(error);
                     });
-               }
+
+                    if(response.status == this.HTTP_CREATED) {
+                        alert(`${this.user.name}님의 가입을 환영합니다.`);
+                        this.dialog = false;
+                    } else {
+                        alert(response.error);
+                    }
+              }
             }
         },
 

@@ -9,7 +9,7 @@ export default {
     namespaced : true,
 
     state : {
-        token : '',
+        token : sessionStorage.getItem('access-token'),
         user : {
             id : '',
             name : ''
@@ -34,6 +34,7 @@ export default {
     mutations : {
         setToken(state, token) {
             state.token=token;
+            sessionStorage.setItem('access-token', token);
         },
         setName(state, name) {
             state.user.name = name;

@@ -36,6 +36,7 @@ export default {
                 } else if(errorCallback){
                     errorCallback(e.response);
                 } else if(e.response?.data?.error){
+                    console.log(e.response.data.error)
                     alert(e.response.data.error);
                 }
             });

@@ -58,9 +58,11 @@ export default {
              * vuex 유저정보 갱신
              */
             if(this.hasToken) {
-                const response=this.$api('api-auth-controller', 'GET');
-                this.setName(response.data.name);
-                this.setId(response.data.id);
+                const response=await this.$api('api/auth/user', 'GET');
+                if(response.status===this.HTTP_OK) {
+                    this.setName(response.data.name);
+                    this.setId(response.data.id);
+                }
             }
         }
     },
