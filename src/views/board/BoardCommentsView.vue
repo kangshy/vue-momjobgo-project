@@ -26,9 +26,9 @@
                     :key="item.name"
                 >
                     <!-- 작성자와 현재 로그인 한 유저가 일치할 때 삭제 아이콘 보이도록 함.-->
-                    <td style="max-width: 400px;">{{ item.comment }}<v-icon small @click="deleteComment(item.id)">delete</v-icon></td>
+                    <td style="max-width: 400px;">{{ item.comment }} <v-icon v-if="item.writer==userId" small @click="deleteComment(item.id)">delete</v-icon></td>
                     <!-- 시간을 나열한 순서대로 조건을 적용한다. 1시간 이내 ?분전으로 표기, 24시간 이내 ?시간전으로 표기, yyyy-MM-dd HH:mm:ss로 표기 .-->
-                    <td class="text-right">{{ new Date(item.createdAt) }}</td>
+                    <td class="text-right">{{ new Date(item.createdAt)  | getWriteTime }}</td>
                     <td class="text-right">{{ item.writer }}</td>
                 </tr>
                 </tbody>
@@ -38,7 +38,11 @@
 </template>
 
 <script>
+    import DateMixin from "@/mixins/date";
+    import { mapGetters } from 'vuex';
+    
     export default {
+        mixins : [DateMixin],
 
         props : {
             bno : {
@@ -47,6 +51,7 @@
         },
 
         data : () => ({
+
             newComment : '',
 
             commentList : []
@@ -56,6 +61,10 @@
             this.callCommentList();
         },
 
+        computed : {
+            ...mapGetters('user', ['userId']),
+        },
+
         methods : {
             async callCommentList() {
                 /**
@@ -63,6 +72,12 @@
                  * 
                  * bno가 0일때는 조회 호출하지 않음.
                  */
+                if(this.bno!==0) {
+                    const response = await this.$api(`/api/board/comment/${this.bno}`, 'GET');
+                    if(response.status==this.HTTP_OK) {
+                        this.commentList = response.data;
+                    }
+                }
             },
 
             async postComment(){
@@ -71,6 +86,19 @@
                  * 
                  * 댓글 입력란에 값이 없으면 '댓글을 입력해주세요 alert'
                  */
+                if(this.newComment.trim()=='') {
+                    alert('댓글을 입력해주세요')
+                    return;
+                }
+
+                const response = await this.$api(`/api/board/comment/${this.bno}`, 'POST', {
+                    comment : this.newComment
+                });
+                if(response.status==this.HTTP_OK) {
+                    this.newComment='';
+                    this.callCommentList();
+                    this.refreshBoardList();
+                }
             },
 
             async deleteComment(id){
@@ -79,6 +107,11 @@
                  * 
                  * 댓글 삭제 여부 확인.
                  */
+                const response = await this.$api(`/api/board/comment/${id}`, 'DELETE');
+                if(response.status==this.HTTP_OK) {
+                    this.callCommentList();
+                    this.refreshBoardList();
+                }
             },
 
             // 상위 게시판 컴포넌트에 댓글 업데이트를 알림.

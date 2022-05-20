@@ -107,6 +107,9 @@
 
         <!-- 테이블 제목 -->
         <!-- 테이블 제목 클릭시 popDetailModal(item) 메소드를 호출하도록 구현, 댓글 갯수가 제목 옆에 보이도록 구현.-->
+        <template #item.title="{ item }">
+            <span @click="popDetailModal(item)">{{ item.title }} [{{item.commentCnt}}]</span>
+        </template>
 
         <!-- 테이블 날짜 -->
         <template #item.createdAt="{ item }">
@@ -167,6 +170,7 @@
                 { text: "제목", value: "title" },
                 { text: "추천수", value: "likeCnt" },
                 // 비 추천수 추가 ( hateCnt )
+                { text: "비 추천수", value: "hateCnt" },
                 { text: "작성자", value: "writer" },
                 { text: "등록일", value: "createdAt" },
                 { text: "", value: "actions", sortable: false },
@@ -195,7 +199,7 @@
         },
 
         computed: {
-            ...mapGetters('user', {userId : 'id'}),
+            ...mapGetters('user', ['userId']),
 
             formTitle(){
                 return this.isModify ? '글 수정' : '글 등록'
@@ -227,12 +231,16 @@
                 this.callBoards();
             },
 
-            callBoards() {
+            async callBoards() {
                 /**
                  * 게시판 목록 호출.
                  * 
                  * boards에 응답 결과를 대입해준다.
                  */
+                const response = await this.$api('/api/board', 'GET');
+                if(response.status == this.HTTP_OK) {
+                    this.boards = response.data;
+                }
             },
 
             // 상세정보 보기 모달 창 on
@@ -257,10 +265,17 @@
                 this.dialogDelete = true;
             },
 
-            deleteItem() {
+            async deleteItem() {
                 /**
                  * 게시물 삭제 구현.
                  */
+                const response = await this.$api(`/api/board/${this.selectedItem.bno}`, 'DELETE');
+
+                if(response.status==this.HTTP_OK) {
+                    this.closeDelete();
+                    alert("삭제되었습니다.");
+                    this.callBoards();
+                }
             },
 
             // 글 등록 or 수정 모달 닫기.
@@ -288,15 +303,36 @@
                 this.selectedIndex = -1;
             },
 
-            save() {
+            async save() {
                 if (this.isModify) {
                     /**
                      * 글 수정.
                      */
+                    const response = await this.$api('/api/board', 'PATCH', {
+                        bno : this.selectedItem.bno,
+                        contents : this.selectedItem.contents,
+                        title : this.selectedItem.title
+                    });
+
+                    if(response.status==this.HTTP_OK) {
+                        this.closeEdit();
+                        alert("수정되었습니다.");
+                        this.callBoards();
+                    }
                 } else {
                     /**
                      * 글 신규등록.
                      */
+                    const response = await this.$api('/api/board', 'POST', {
+                        contents : this.selectedItem.contents,
+                        title : this.selectedItem.title
+                    });
+
+                    if(response.status==this.HTTP_CREATED) {
+                        this.closeEdit();
+                        alert("등록되었습니다.");
+                        this.callBoards();
+                    }
                 }
             },
 
@@ -305,16 +341,27 @@
                 this.callBoards();
             },
 
-            callEmotion(){
+            async callEmotion(){
                 /**
                  * 좋아요 불러오기.
                  */
+                const response=await this.$api(`/api/board/emotion/${this.selectedItem.bno}`, 'GET');
+                if(response.status==this.HTTP_OK){
+                    this.emotionOn = response.data.emotion;
+                }
             },
 
-            clickEmotion(item, index){
+            async clickEmotion(item, index){
                 /**
                  * 감정표현 클릭.
-                 */             
+                 */
+                if(this.emotionOn==null || this.emotionOn!=item.value) {
+                    this.emotionOn=item.value;
+                } else {
+                    this.emotionOn=null;
+                }
+                await this.$api(`/api/board/emotion/${this.selectedItem.bno}`, 'POST', {emotion: this.emotionOn});
+                this.callBoards();
             },
 
         }
