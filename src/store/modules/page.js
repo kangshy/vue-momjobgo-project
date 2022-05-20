@@ -2,6 +2,7 @@ import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/login/LoginView.vue'
 import UserView from '@/views/UserView.vue'
 import BoardView from '@/views/board/BoardsView.vue'
+import CalculatorView from '@/views/calculator/CalculatorView.vue'
 
 export default {
 
@@ -38,7 +39,18 @@ export default {
                 },
                 component : BoardView
             },
-            
+
+            calculator : {
+                path: `/calculator`,
+                name: `calculator`,
+                meta: {
+                    title: `Calculator`,
+                    icon: `mdi-calculator-variant-outline`,
+                    display : true
+                },
+                component : CalculatorView
+            },
+           
             user : {
                 path: `/user`,
                 name: `user`,
