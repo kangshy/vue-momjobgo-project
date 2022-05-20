@@ -5,5 +5,5 @@ module.exports = defineConfig({
   ],
 
   outputDir: './docs',
-  publicPath : '/momjobgo-project/'
+  publicPath : '/vue-momjobgo-project/'
 })
