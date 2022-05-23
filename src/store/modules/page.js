@@ -14,7 +14,7 @@ export default {
         title : '',
 
         // basepath가 있다면 지정.
-        basePath : '',
+        basePath : '/vue-momjobgo-project',
 
         // router와 nav의 목록 리스트에 동시에 적용되는 list, display에 nav노출이 결정된다.
         list : {
@@ -50,7 +50,7 @@ export default {
                 },
                 component : CalculatorView
             },
-           
+
             user : {
                 path: `/user`,
                 name: `user`,

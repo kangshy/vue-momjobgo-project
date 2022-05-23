@@ -41,8 +41,21 @@ export default {
                     console.log(e.response.data.error)
                     alert(e.response.data.error);
                 }
+                return e.response;
             });
             
+        },
+
+        $loadKakaoMap(callback) {
+            if (typeof kakao === 'undefined') {
+                const script = document.createElement('script');
+                script.onload = () => kakao.maps.load(callback);
+                console.log(process.env.VUE_APP_KAKAO_MAP_KEY);
+                script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.VUE_APP_KAKAO_MAP_KEY}&autoload=false&libraries=services`;
+                document.head.appendChild(script);
+            } else {
+                callback();
+            }
         },
 
     },
