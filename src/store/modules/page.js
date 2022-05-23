@@ -3,6 +3,7 @@ import LoginView from '@/views/login/LoginView.vue'
 import UserView from '@/views/UserView.vue'
 import BoardView from '@/views/board/BoardsView.vue'
 import CalculatorView from '@/views/calculator/CalculatorView.vue'
+import KakaoMapView from '@/views/KakaoMapView.vue'
 
 export default {
 
@@ -49,6 +50,17 @@ export default {
                     display : true
                 },
                 component : CalculatorView
+            },
+
+            kakaomap : {
+                path: `/kakaomap`,
+                name: `kakaomap`,
+                meta: {
+                    title: `Kakaomap`,
+                    icon: `mdi-map-search`,
+                    display : true
+                },
+                component : KakaoMapView
             },
 
             user : {
